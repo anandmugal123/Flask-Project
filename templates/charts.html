@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Generated Charts{% endblock %}
+{% block content %}
+    <section class="dashboard-header">
+        <h1 class="page-title">Generated Charts</h1>
+    </section>
+
+    <div class="chart-container">
+        {% for chart in charts %}
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <h2>Chart {{ loop.index }}</h2>
+            </div>
+            <div class="chart-card-body">
+                <div class="chart-wrapper">
+                    {{ chart|safe }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

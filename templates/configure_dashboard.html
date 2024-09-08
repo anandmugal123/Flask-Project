@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Configure Dashboard{% endblock %}
+{% block content %}
+    <section class="dashboard-header">
+        <h1 class="page-title">Configure Your Dashboard</h1>
+        <p>Select charts, customize data, and preview.</p>
+    </section>
+
+    <form method="POST" action="{{ url_for('configure_dashboard') }}" class="config-form">
+        <label for="num_charts">How many charts do you want?</label>
+        <input type="number" id="num_charts" name="num_charts" min="1" value="1" required>
+
+        <div id="charts-config" class="chart-config-grid">
+            <!-- Chart configurations injected dynamically here -->
+        </div>
+
+        <input type="hidden" name="csv_file_path" value="{{ filepath }}">
+        <button type="submit" class="btn">Generate Charts</button>
+    </form>
+
+    <script>
+        function updateChartConfig() {
+            const numCharts = document.getElementById('num_charts').value;
+            const container = document.getElementById('charts-config');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= numCharts; i++) {
+                container.innerHTML += `
+                    <div class="chart-config-card">
+                        <div class="chart-header">
+                            <h2>Chart ${i}</h2>
+                        </div>
+                        <div class="chart-body">
+                            <label>Select Chart Type:</label>
+                            <select name="chart_type_${i}" required onchange="updateChartPreview(this, ${i})">
+                                <option value="pie">Pie Chart</option>
+                                <option value="bar">Bar Chart</option>
+                                <option value="scatter">Scatter Plot</option>
+                                <option value="line">Line Chart</option>
+                                <option value="histogram">Histogram</option>
+                                <option value="box">Box Plot</option>
+                                <option value="heatmap">Heatmap</option>
+                                <option value="area">Area Chart</option>
+                                <option value="bubble">Bubble Chart</option>
+                            </select>
+
+                            <label>Select X Column:</label>
+                            <select name="x_column_${i}" required>
+                                {% for column in columns %}
+                                    <option value="{{ column }}">{{ column }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label>Select Y Column (optional for Pie Chart):</label>
+                            <select name="y_column_${i}">
+                                {% for column in columns %}
+                                    <option value="{{ column }}">{{ column }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                      
+                    </div>
+                `;
+            }
+        }
+
+        function updateChartPreview(selectElement, chartIndex) {
+            const chartPreview = document.getElementById(`chart-preview-${chartIndex}`);
+            const chartType = selectElement.value;
+            chartPreview.innerHTML = `<p>Chart Preview: <span>${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart</span></p>`;
+        }
+
+        document.getElementById('num_charts').addEventListener('change', updateChartConfig);
+        updateChartConfig();
+    </script>
+{% endblock %}
